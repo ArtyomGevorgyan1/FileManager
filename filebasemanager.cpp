@@ -57,11 +57,13 @@ void FilebaseManager::writeTree(TreeItem* parent) const
             break;
         }
         QPair <int, TreeItem*> currentPair = reverseStack.last();
+        //qDebug() << currentPair.second ->data(0);
         reverseStack.pop_back();
         for (int i = 0; i < currentPair.first; i++) {
             in << " ";
         }
-        //in << *(currentPair.second) << "\n";
+
+        in << (currentPair.second) << "\n";
 
         if (currentPair.second ->childCount() > 0) {
             for (int i = currentPair.second->childCount(); i >= 0; i--) {
@@ -74,7 +76,7 @@ void FilebaseManager::writeTree(TreeItem* parent) const
 
 // не надо прописывать >> для treeitem
 
-// тут не проверял
+// тут не проверял - работает
 TreeItem* FilebaseManager::readTree(QString driveName) const
 {
     QFile file(mRoot + "/" + driveName + ".inf");

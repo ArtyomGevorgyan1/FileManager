@@ -24,11 +24,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    /* TEST
-     *
+
     FilebaseManager::instance().setRoot(QDir::currentPath());
-    FilebaseManager::instance().readTree("name");
-   */
+
+    addEntryToFilebase();
+
 }
 
 MainWindow::~MainWindow()
@@ -108,6 +108,9 @@ void MainWindow::addEntryToFilebase()
     // получили дерево, которое представляет диск
 
     // запишем его в файл
+    qDebug() << header ->data(0);
+    qDebug() << "has " << header -> childCount() << " children\n";
+
     FilebaseManager::instance().writeTree(header);
 }
 
