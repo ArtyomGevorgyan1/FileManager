@@ -19,9 +19,10 @@ public:
    TreeItem* readTree(QString driveName) const;
    void removeFile(QString fileName) const;
 
-   //additional
+   //additional - потом
    void mergeDirectories(QString resultName, QStringList toMerge);
    int knownFieCopiesCounter(QCryptographicHash hash);
+   //QList <QVariant> searchFor() const;
 
 protected:
     FilebaseManager();

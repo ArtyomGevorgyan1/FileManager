@@ -72,11 +72,12 @@ void FilebaseManager::writeTree(TreeItem* parent) const
 
 }
 
+// не надо прописывать >> для treeitem
 
 // тут не проверял
 TreeItem* FilebaseManager::readTree(QString driveName) const
 {
-    QFile file(mRoot + "/" + driveName);
+    QFile file(mRoot + "/" + driveName + ".inf");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "failed to open file\n";
     }
@@ -89,16 +90,22 @@ TreeItem* FilebaseManager::readTree(QString driveName) const
         lines.append(line);
     }
 
-    TreeItem* parent;
+
+    // заполним сейча header, потом пропустим певую итерацию цикла
+    QList <QVariant> list;
+    list << "Name" << "CreatedTime" << "ModifiedTime" << "Extension" << "IsDir" << "HashValue";
+    TreeItem* parent = new TreeItem(list, nullptr);
 
     QList<TreeItem*> parents;
     QList<int> indentations;
     parents << parent;
     indentations << 0;
 
-    int number = 0;
+    // начинаем с единицы, потому что перввая (0-я) строка уже записана
+    int number = 1;
 
     while (number < lines.count()) {
+
         int position = 0;
         while (position < lines[number].length()) {
             if (lines[number].at(position) != ' ')

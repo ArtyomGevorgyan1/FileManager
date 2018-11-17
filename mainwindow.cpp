@@ -24,7 +24,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //FilebaseManager::instance();
+    /* TEST
+     *
+    FilebaseManager::instance().setRoot(QDir::currentPath());
+    FilebaseManager::instance().readTree("name");
+   */
 }
 
 MainWindow::~MainWindow()
