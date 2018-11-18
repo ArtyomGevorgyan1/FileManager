@@ -56,17 +56,32 @@ void MainWindow::addEntryToFilebase()
     stack.push_back({header, path});
     // stack is never empty!
 
+    int cnt = 0;
     while (iter.hasNext()) {
+
+        //qDebug() << cnt << "\n";
+
+        //useless check - stack is never empty
+        //if (stack.isEmpty()) {
+          //  break;
+        //}
 
         // read the current file info and ignore curPath/. and curPath/..
         QString thisFilePath = iter.next();
-        if (thisFilePath == path + "/." || thisFilePath == path + "/..") {
-            break;
+        /*
+        if (thisFilePath == path + "/." ||
+            thisFilePath == path + "/..") {
+            continue;
         }
+        */
+        if (thisFilePath[thisFilePath.size() - 1] == ".") {
+            continue;
+        }
+        //qDebug() << thisFilePath <<"\n";
         QFileInfo info(thisFilePath);
         QList <QVariant>* data = new QList <QVariant>;
 
-        // this blocks sets the data list
+        // this block sets the data list
         QString hashValue;
         if (info.isFile()) {
             QCryptographicHash calculateMd5(QCryptographicHash::Md5);
@@ -90,11 +105,21 @@ void MainWindow::addEntryToFilebase()
             *data << hashValue;
         }
 
-        // this block managaer the parental relationships
+        //qDebug() << *data;
+
+        // this block manages the parental relationships
         TreeItem* currentItem;
         TreeItem* prevParent = stack.last().first;
+        //qDebug() << prevParent->data(0) <<" look\n";
         QString prevFilePath = stack.last().second;
-        if (prevFilePath.contains(thisFilePath)) {
+
+        // проверка не работает?
+        /*
+        qDebug() << prevFilePath << thisFilePath <<  "\n";
+        qDebug() << prevFilePath.contains(thisFilePath);
+        */
+
+        if (thisFilePath.contains(prevFilePath)) {
             currentItem = new TreeItem(*data, prevParent);
             prevParent -> appendChild(currentItem);
             stack.push_back({currentItem, thisFilePath});
@@ -104,6 +129,7 @@ void MainWindow::addEntryToFilebase()
             stack.last().first -> appendChild(currentItem);
             stack.push_back({currentItem, thisFilePath});
         }
+        cnt++;
     }
     // получили дерево, которое представляет диск
 
