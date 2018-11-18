@@ -40,17 +40,6 @@ QTextStream& operator << (QTextStream& stream, TreeItem* item)
     return stream;
 }
 
-void tree(TreeItem* cur,int d) {
-    if (cur) {
-        for (int i = 0; i < cur -> childCount(); i++) {
-            qDebug() << cur ->child(i)->data(0);
-            tree(cur -> child(i), d + 1);
-        }
-
-        qDebug() << d << "\n";
-    }
-}
-
 void FilebaseManager::writeTree(TreeItem* parent) const
 {
     QString driveName = parent -> data(0).toString();
@@ -59,19 +48,23 @@ void FilebaseManager::writeTree(TreeItem* parent) const
         qDebug() << "failed to open file\n";
     }
 
-    tree(parent, 0);
-    qDebug() << "ALIVE!\n";
-
     QTextStream in(&file);
     QVector <QPair <int, TreeItem*>> reverseStack;
     reverseStack.push_back({0, parent});
 
+    qDebug() << "F\n";
     while (1) {
+
+
+        qDebug() << reverseStack.size();
+
         if (reverseStack.isEmpty()) {
+            qDebug () << "empty stack\n";
             break;
         }
+
         QPair <int, TreeItem*> currentPair = reverseStack.last();
-        //qDebug() << currentPair.second ->data(0);
+        qDebug() << "here" << currentPair.second ->data(0) << "\n";
         reverseStack.pop_back();
         for (int i = 0; i < currentPair.first; i++) {
             in << " ";
@@ -83,9 +76,11 @@ void FilebaseManager::writeTree(TreeItem* parent) const
             for (int i = currentPair.second->childCount(); i >= 0; i--) {
                 reverseStack.push_back({currentPair.first + 1, currentPair.second->child(i)});
             }
+        } else {
+            reverseStack.pop_back();
         }
     }
-
+    qDebug() <<"END\n";
 }
 
 // не надо прописывать >> для treeitem
