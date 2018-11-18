@@ -40,6 +40,15 @@ QTextStream& operator << (QTextStream& stream, TreeItem* item)
     return stream;
 }
 
+void test(TreeItem* item, int d) {
+
+    for (int i = 0;i < item -> childCount(); i++) {
+        test(item ->child(i), d+1);
+    }
+    qDebug() << d;
+}
+
+// работает правильно, но на входе какая-то дичь
 void FilebaseManager::writeTree(TreeItem* parent) const
 {
     QString driveName = parent -> data(0).toString();
@@ -47,6 +56,8 @@ void FilebaseManager::writeTree(TreeItem* parent) const
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         qDebug() << "failed to open file\n";
     }
+
+    qDebug() << "ENDED TEST\n";
 
     QTextStream in(&file);
     QVector <QPair <int, TreeItem*>> reverseStack;

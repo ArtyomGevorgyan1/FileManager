@@ -36,6 +36,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+// возвращает неправильное дерево!
 void MainWindow::addEntryToFilebase()
 {
     //set the path from which to pull data
@@ -160,7 +161,9 @@ void MainWindow::addEntryToFilebase()
     TreeItem* next2 = new TreeItem(*headerData, testTree);
     testTree -> appendChild(next2);
 
-    FilebaseManager::instance().writeTree(testTree);
+
+
+    FilebaseManager::instance().writeTree(header);
 }
 
 #include <QStringListModel>
