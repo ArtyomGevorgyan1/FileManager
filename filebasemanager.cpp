@@ -52,19 +52,17 @@ void FilebaseManager::writeTree(TreeItem* parent) const
     QVector <QPair <int, TreeItem*>> reverseStack;
     reverseStack.push_back({0, parent});
 
-    qDebug() << "F\n";
     while (1) {
 
 
-        qDebug() << reverseStack.size();
+        //qDebug() << reverseStack.size();
 
         if (reverseStack.isEmpty()) {
-            qDebug () << "empty stack\n";
+            //qDebug () << "empty stack\n";
             break;
         }
 
         QPair <int, TreeItem*> currentPair = reverseStack.last();
-        qDebug() << "here" << currentPair.second ->data(0) << "\n";
         reverseStack.pop_back();
         for (int i = 0; i < currentPair.first; i++) {
             in << " ";
@@ -80,7 +78,7 @@ void FilebaseManager::writeTree(TreeItem* parent) const
             reverseStack.pop_back();
         }
     }
-    qDebug() <<"END\n";
+    file.close();
 }
 
 // не надо прописывать >> для treeitem
@@ -154,7 +152,7 @@ TreeItem* FilebaseManager::readTree(QString driveName) const
 
         ++number;
     }
-
+    file.close();
     return parent;
 }
 
