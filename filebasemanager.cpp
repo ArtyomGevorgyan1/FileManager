@@ -48,7 +48,10 @@ void test(TreeItem* item, int d) {
     qDebug() << d;
 }
 
-// работает правильно, но на входе какая-то дичь
+// работает правильно, но на входе какая-то дичь - если вложенность больше одного, то не работает
+
+
+/*
 void FilebaseManager::writeTree(TreeItem* parent) const
 {
     QString driveName = parent -> data(0).toString();
@@ -91,6 +94,88 @@ void FilebaseManager::writeTree(TreeItem* parent) const
     }
     file.close();
 }
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <QHash>
+// работает правильно!
+void FilebaseManager::writeTree(TreeItem* parent) const
+{
+    QString driveName = parent -> data(0).toString();
+    QFile file(mRoot + "/" + driveName + ".inf");
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qDebug() << "failed to open file\n";
+    }
+
+    qDebug() << "ENDED TEST\n";
+
+    QTextStream in(&file);
+
+
+    QVector <QPair<int, TreeItem*>> stack;
+    QHash<TreeItem*, int> lastChildWritten;
+    stack.push_back({0, parent});
+
+    while (1) {
+
+        if (stack.isEmpty()) {
+            break;
+        }
+
+        int curIndent = stack.last().first;
+        TreeItem* curItem = stack.last().second;
+        stack.pop_back();
+
+        for (int i = 0; i <curIndent; i++) {
+            in << " ";
+        }
+        in << curItem << "\n";
+
+        int currentChildIndex = 0;
+        if (lastChildWritten.find(curItem) != lastChildWritten.end()) {
+            currentChildIndex = lastChildWritten[curItem];
+        } else {
+            lastChildWritten.insert(curItem, 0);
+        }
+
+        if (curItem -> childCount() > 0 && currentChildIndex < curItem -> childCount()) {
+            stack.push_back({curIndent + 1, curItem -> child(currentChildIndex)});
+            lastChildWritten[curItem]++;
+        } else if (parent != curItem -> parentItem()){
+            stack.push_back({curIndent - 1, curItem -> parentItem()});
+        }
+    }
+
+    file.close();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // не надо прописывать >> для treeitem
 

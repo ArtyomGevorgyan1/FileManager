@@ -37,6 +37,10 @@ MainWindow::~MainWindow()
 }
 
 // возвращает неправильное дерево!
+
+/*Я НЕПРАВИЛЬНО СТРОИЛ ДЕРЕВО
+ * Я НЕ УЧЕЛ ЧТО РАЗНИЦА ВО ВЛОЖЕННОСТИ МОЖЕТ БЫТЬЛЮБОЙ
+*/
 void MainWindow::addEntryToFilebase()
 {
     //set the path from which to pull data
@@ -123,6 +127,7 @@ void MainWindow::addEntryToFilebase()
         if (thisFilePath.contains(prevFilePath)) {
             currentItem = new TreeItem(*data, prevParent);
             prevParent -> appendChild(currentItem);
+
             stack.push_back({currentItem, thisFilePath});
         } else {
             stack.pop_back();
@@ -151,10 +156,18 @@ void MainWindow::addEntryToFilebase()
     TreeItem* next = new TreeItem(*headerData, testTree);
     testTree -> appendChild(next);
 
+
+
     headerData = new QList <QVariant>;
     *headerData << "AA" << "CreatedTime" << "ModifiedTime" << "Extension" << "IsDir" << "HashValue";
     TreeItem* next1 = new TreeItem(*headerData, next);
     next -> appendChild(next1);
+
+
+    headerData = new QList <QVariant>;
+    *headerData << "AAA" << "createdtime" << "midifiedtime" << "extension" << "isdir" <<  "hashvalue";
+    TreeItem* ff = new TreeItem(*headerData, next1);
+    next1 -> appendChild(ff);
 
     headerData = new QList <QVariant>;
     *headerData << "B" << "CreatedTime" << "ModifiedTime" << "Extension" << "IsDir" << "HashValue";
@@ -163,7 +176,7 @@ void MainWindow::addEntryToFilebase()
 
 
 
-    FilebaseManager::instance().writeTree(header);
+    FilebaseManager::instance().writeTree(testTree);
 }
 
 #include <QStringListModel>
