@@ -43,7 +43,8 @@ QTextStream& operator << (QTextStream& stream, TreeItem* item)
 void tree(TreeItem* cur,int d) {
     if (cur) {
         for (int i = 0; i < cur -> childCount(); i++) {
-            tree(cur -> child(i), d);
+            qDebug() << cur ->child(i)->data(0);
+            tree(cur -> child(i), d + 1);
         }
 
         qDebug() << d << "\n";
@@ -59,6 +60,7 @@ void FilebaseManager::writeTree(TreeItem* parent) const
     }
 
     tree(parent, 0);
+    qDebug() << "ALIVE!\n";
 
     QTextStream in(&file);
     QVector <QPair <int, TreeItem*>> reverseStack;

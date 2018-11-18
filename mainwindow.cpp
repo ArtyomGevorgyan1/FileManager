@@ -137,7 +137,30 @@ void MainWindow::addEntryToFilebase()
     qDebug() << header ->data(0);
     qDebug() << "has " << header -> childCount() << " children\n";
 
-    FilebaseManager::instance().writeTree(header);
+    //FilebaseManager::instance().writeTree(header);
+
+    qDebug() << "SURVIVED\n";
+
+    headerData = new QList <QVariant>;
+    *headerData << "Name" << "CreatedTime" << "ModifiedTime" << "Extension" << "IsDir" << "HashValue";
+    TreeItem* testTree = new TreeItem(*headerData, nullptr);
+
+    headerData = new QList <QVariant>;
+    *headerData << "A" << "CreatedTime" << "ModifiedTime" << "Extension" << "IsDir" << "HashValue";
+    TreeItem* next = new TreeItem(*headerData, testTree);
+    testTree -> appendChild(next);
+
+    headerData = new QList <QVariant>;
+    *headerData << "AA" << "CreatedTime" << "ModifiedTime" << "Extension" << "IsDir" << "HashValue";
+    TreeItem* next1 = new TreeItem(*headerData, next);
+    next -> appendChild(next1);
+
+    headerData = new QList <QVariant>;
+    *headerData << "B" << "CreatedTime" << "ModifiedTime" << "Extension" << "IsDir" << "HashValue";
+    TreeItem* next2 = new TreeItem(*headerData, testTree);
+    testTree -> appendChild(next2);
+
+    FilebaseManager::instance().writeTree(testTree);
 }
 
 #include <QStringListModel>
