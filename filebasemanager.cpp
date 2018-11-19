@@ -3,6 +3,7 @@
 #include <QTextStream>
 #include <QDebug>
 #include <QStringList>
+#include <QHash>
 
 FilebaseManager::FilebaseManager()
 {
@@ -48,67 +49,6 @@ void test(TreeItem* item, int d) {
     qDebug() << d;
 }
 
-// работает правильно, но на входе какая-то дичь - если вложенность больше одного, то не работает
-
-
-/*
-void FilebaseManager::writeTree(TreeItem* parent) const
-{
-    QString driveName = parent -> data(0).toString();
-    QFile file(mRoot + "/" + driveName + ".inf");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qDebug() << "failed to open file\n";
-    }
-
-    qDebug() << "ENDED TEST\n";
-
-    QTextStream in(&file);
-    QVector <QPair <int, TreeItem*>> reverseStack;
-    reverseStack.push_back({0, parent});
-
-    while (1) {
-
-
-        //qDebug() << reverseStack.size();
-
-        if (reverseStack.isEmpty()) {
-            //qDebug () << "empty stack\n";
-            break;
-        }
-
-        QPair <int, TreeItem*> currentPair = reverseStack.last();
-        reverseStack.pop_back();
-        for (int i = 0; i < currentPair.first; i++) {
-            in << " ";
-        }
-
-        in << (currentPair.second) << "\n";
-
-        if (currentPair.second ->childCount() > 0) {
-            for (int i = currentPair.second->childCount(); i >= 0; i--) {
-                reverseStack.push_back({currentPair.first + 1, currentPair.second->child(i)});
-            }
-        } else {
-            reverseStack.pop_back();
-        }
-    }
-    file.close();
-}
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-#include <QHash>
 // работает правильно!
 void FilebaseManager::writeTree(TreeItem* parent) const
 {
@@ -160,26 +100,9 @@ void FilebaseManager::writeTree(TreeItem* parent) const
     file.close();
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // не надо прописывать >> для treeitem
 
-// тут не проверял - работает
+// работает
 TreeItem* FilebaseManager::readTree(QString driveName) const
 {
     QFile file(mRoot + "/" + driveName + ".inf");

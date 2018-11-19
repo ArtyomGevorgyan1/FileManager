@@ -36,11 +36,8 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-// возвращает неправильное дерево!
+#include <QHash>
 
-/*Я НЕПРАВИЛЬНО СТРОИЛ ДЕРЕВО
- * Я НЕ УЧЕЛ ЧТО РАЗНИЦА ВО ВЛОЖЕННОСТИ МОЖЕТ БЫТЬЛЮБОЙ
-*/
 void MainWindow::addEntryToFilebase()
 {
     //set the path from which to pull data
@@ -50,39 +47,27 @@ void MainWindow::addEntryToFilebase()
                                                      QFileDialog::ReadOnly);
     QDirIterator iter(path, QDirIterator::Subdirectories);
 
+
+    qDebug() << path << "\n";
+
     // set the header treeitem to hold the informaton needed to be privided to view
     QList <QVariant>* headerData = new QList <QVariant>;
     *headerData << "Name" << "CreatedTime" << "ModifiedTime" << "Extension" << "IsDir" << "HashValue";
     TreeItem* header = new TreeItem(*headerData);
 
-    // information needed to traverse the filetree
-    QString prevFilePath = path;
-    QVector <QPair <TreeItem*, QString>> stack;
-    stack.push_back({header, path});
-    // stack is never empty!
 
-    int cnt = 0;
+    QHash<QString, TreeItem*> map;
+    map.insert(path, header);
     while (iter.hasNext()) {
 
-        //qDebug() << cnt << "\n";
 
-        //useless check - stack is never empty
-        //if (stack.isEmpty()) {
-          //  break;
-        //}
-
-        // read the current file info and ignore curPath/. and curPath/..
+        // собрать инф
         QString thisFilePath = iter.next();
-        /*
-        if (thisFilePath == path + "/." ||
-            thisFilePath == path + "/..") {
-            continue;
-        }
-        */
+
         if (thisFilePath[thisFilePath.size() - 1] == ".") {
             continue;
         }
-        //qDebug() << thisFilePath <<"\n";
+
         QFileInfo info(thisFilePath);
         QList <QVariant>* data = new QList <QVariant>;
 
@@ -110,73 +95,38 @@ void MainWindow::addEntryToFilebase()
             *data << hashValue;
         }
 
-        //qDebug() << *data;
-
-        // this block manages the parental relationships
-        TreeItem* currentItem;
-        TreeItem* prevParent = stack.last().first;
-        //qDebug() << prevParent->data(0) <<" look\n";
-        QString prevFilePath = stack.last().second;
-
-        // проверка не работает?
-        /*
-        qDebug() << prevFilePath << thisFilePath <<  "\n";
-        qDebug() << prevFilePath.contains(thisFilePath);
-        */
-
-        if (thisFilePath.contains(prevFilePath)) {
-            currentItem = new TreeItem(*data, prevParent);
-            prevParent -> appendChild(currentItem);
-
-            stack.push_back({currentItem, thisFilePath});
-        } else {
-            stack.pop_back();
-            currentItem = new TreeItem(*data, stack.last().first);
-            stack.last().first -> appendChild(currentItem);
-            stack.push_back({currentItem, thisFilePath});
+        QString parentPath = thisFilePath;
+        qDebug() << parentPath << "\n";
+        //убрать до последнего слеша
+        for (int i = thisFilePath.size() - 1; i >= 0; i--) {
+            if (thisFilePath[i] == "/" && i == 0) {
+                parentPath.replace(i, 1, " ");
+            } else if (thisFilePath[i] != "/") {
+                parentPath.replace(i, 1, " ");
+            } else {
+                break;
+            }
         }
-        cnt++;
+        parentPath = parentPath.trimmed();
+        if (parentPath[parentPath.size() - 1] == "/") {
+            // папка
+            qDebug() << "triggeredn\n";
+            parentPath.replace(parentPath.size() - 1, 1, " ");
+        }
+        parentPath = parentPath.trimmed();
+        qDebug() << parentPath;
+
+
+        TreeItem* parent = map[parentPath];
+        TreeItem* currentItem = new TreeItem(*data, parent);
+        parent ->appendChild(currentItem);
+        map.insert(thisFilePath, currentItem);
+
     }
     // получили дерево, которое представляет диск
 
     // запишем его в файл
-    qDebug() << header ->data(0);
-    qDebug() << "has " << header -> childCount() << " children\n";
-
-    //FilebaseManager::instance().writeTree(header);
-
-    qDebug() << "SURVIVED\n";
-
-    headerData = new QList <QVariant>;
-    *headerData << "Name" << "CreatedTime" << "ModifiedTime" << "Extension" << "IsDir" << "HashValue";
-    TreeItem* testTree = new TreeItem(*headerData, nullptr);
-
-    headerData = new QList <QVariant>;
-    *headerData << "A" << "CreatedTime" << "ModifiedTime" << "Extension" << "IsDir" << "HashValue";
-    TreeItem* next = new TreeItem(*headerData, testTree);
-    testTree -> appendChild(next);
-
-
-
-    headerData = new QList <QVariant>;
-    *headerData << "AA" << "CreatedTime" << "ModifiedTime" << "Extension" << "IsDir" << "HashValue";
-    TreeItem* next1 = new TreeItem(*headerData, next);
-    next -> appendChild(next1);
-
-
-    headerData = new QList <QVariant>;
-    *headerData << "AAA" << "createdtime" << "midifiedtime" << "extension" << "isdir" <<  "hashvalue";
-    TreeItem* ff = new TreeItem(*headerData, next1);
-    next1 -> appendChild(ff);
-
-    headerData = new QList <QVariant>;
-    *headerData << "B" << "CreatedTime" << "ModifiedTime" << "Extension" << "IsDir" << "HashValue";
-    TreeItem* next2 = new TreeItem(*headerData, testTree);
-    testTree -> appendChild(next2);
-
-
-
-    FilebaseManager::instance().writeTree(testTree);
+     FilebaseManager::instance().writeTree(header);
 }
 
 #include <QStringListModel>
