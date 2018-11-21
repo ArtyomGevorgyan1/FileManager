@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     FilebaseManager::instance().setRoot(QDir::currentPath());
 
     addEntryToFilebase();
+    //showEntry();
 
 }
 
@@ -129,20 +130,40 @@ void MainWindow::addEntryToFilebase()
      FilebaseManager::instance().writeTree(header);
 }
 
+
+
 #include <QStringListModel>
 #include <QListView>
 
-// не проверял
+#include <QLineEdit>
+#include <QInputDialog>
 
-/* в плане сделать свое меню для выбора, какой файл открыть */
 void MainWindow::showEntry()
 {
-   QString fileName = QFileDialog::getOpenFileName(this, "select",
-                                                   FilebaseManager::instance().root(),
-                                                   "(*.inf)");
-   TreeModel* model = new TreeModel(FilebaseManager::instance().readTree(fileName), this);
-   ui ->treeList->setModel(model);
-   ui -> treeList->show();
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+                                         tr("User name:"), QLineEdit::Normal,
+                                         FilebaseManager::instance().root(), &ok);
+
+    QDir dir(FilebaseManager::instance().root());
+    if (!ok || text.isEmpty()) {
+        qDebug() << "!ok"
+                    "\n";
+        return;
+    }
+    if (dir.exists(text + ".inf")) {
+        qDebug() << "worked\n";
+        TreeItem* tree = FilebaseManager::instance().readTree(text + ".inf");
+
+        qDebug() << tree ->data(0);
+        for (int i = 0; i < tree->childCount(); i++) {
+            qDebug() << tree ->child(i)->data(0);
+        }
+
+        TreeModel* model = new TreeModel(tree);
+        ui ->treeList->setModel(model);
+        ui -> treeList->show();
+    }
 }
 
 void MainWindow::deleteEntry()
