@@ -25,6 +25,7 @@
 #include <QDebug>
 #include <QTime>
 #include <QTreeView>
+#include <QVariant>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -35,12 +36,27 @@ MainWindow::MainWindow(QWidget *parent) :
     FilebaseManager::instance().setRoot(QDir::currentPath());
 
     //addEntryToFilebase();
-    //showEntry();
+    showEntry();
     //showDrive();
     //customViewer();
-    addEntryToFilebase();
-    //TreeItem* p = FilebaseManager::instance().readTree("Name.inf");
+   // addEntryToFilebase();
+    //showEntry();
     //deleteEntry();
+
+    /*
+    QList <QVariant> data;
+    data << "first" << "second";
+    TreeItem* p = new TreeItem(data);
+    TreeItem* pp = new TreeItem(data,
+                                p);
+    TreeItem* ppp = new TreeItem(data, pp);
+    p -> appendChild(pp);
+    pp -> appendChild(ppp);
+
+    TreeModel* model = new TreeModel(p, this);
+    ui -> treeView ->setModel(model);
+    ui -> treeView -> show();
+    */
 
 }
 
@@ -139,6 +155,7 @@ void MainWindow::addEntryToFilebase()
      FilebaseManager::instance().writeTree(header);
 }
 
+
 void MainWindow::showEntry()
 {
     bool ok;
@@ -150,21 +167,12 @@ void MainWindow::showEntry()
     if (!ok || text.isEmpty()) {
         return;
     }
-    if (dir.exists(text + ".inf")) {
-        TreeItem* tree = FilebaseManager::instance().readTree(text + ".inf");
 
-        /*
-        qDebug() << tree ->data(0);
-        for (int i = 0; i < tree->childCount(); i++) {
-            qDebug() << tree ->child(i)->data(0);
-        }
-        */
-
-        TreeModel* model = new TreeModel(tree);
-        ui ->treeList->setModel(model);
-        ui -> treeList->show();
-    }
+    TreeModel* model = new TreeModel(FilebaseManager::instance().readTree("Name.inf"));
+    ui -> treeView -> setModel(model);
+    ui -> treeView -> show();
 }
+
 
 void MainWindow::deleteEntry()
 {
@@ -172,7 +180,6 @@ void MainWindow::deleteEntry()
                                                     FilebaseManager::instance().root(),
                                                     "(*.inf)");
     FilebaseManager::instance().removeFile(fileName);
-
 }
 
 void MainWindow::showDrive()
@@ -187,6 +194,7 @@ void MainWindow::showDrive()
     view -> show();
 }
 
+// todo
 void MainWindow::customViewer()
 {
     FileSystemDialog* dialog = new FileSystemDialog(this);

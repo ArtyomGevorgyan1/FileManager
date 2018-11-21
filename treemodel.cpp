@@ -5,20 +5,21 @@
 
 #include <QStringList>
 
-TreeModel::TreeModel(/*const QString &data, */TreeItem* root, QObject *parent)
+TreeModel::TreeModel(TreeItem* root, QObject *parent)
     : QAbstractItemModel(parent)
 {
-    /*
+    rootItem = root;
+}
+
+TreeModel::TreeModel(const QString &data, QObject *parent) :
+    QAbstractItemModel (parent)
+{
     QList<QVariant> rootData;
     rootData << "Name" << "Id" << "Third";
     rootItem = new TreeItem(rootData);
     setupModelData(data.split(QString("\n")), rootItem);
-    */
-
-    QList<QVariant> rootData;
-    rootData << "Name" << "Id" << "Third";
-    rootItem = root;
 }
+
 
 TreeModel::~TreeModel()
 {
@@ -33,9 +34,11 @@ int TreeModel::columnCount(const QModelIndex &parent) const
         return rootItem->columnCount();
 }
 
+#include <QDebug>
 QVariant TreeModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
+
         return QVariant();
 
     if (role != Qt::DisplayRole)

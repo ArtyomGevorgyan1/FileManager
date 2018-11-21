@@ -18,6 +18,8 @@ public:
    void writeTree(TreeItem* parent) const;
    TreeItem* readTree(QString driveName) const;
    void removeFile(QString fileName) const;
+   QStringList readLines(QString driveName) const;
+   QString readAll(QString driveName) const;
 
    //additional - потом
    void mergeDirectories(QString resultName, QStringList toMerge);

@@ -102,6 +102,7 @@ void FilebaseManager::writeTree(TreeItem* parent) const
     file.close();
 }
 
+// дерево неправильное, но в принципе для теста сойдет
 TreeItem* FilebaseManager::readTree(QString driveName) const
 {
     QFile file(mRoot + "/" + driveName);
@@ -181,6 +182,25 @@ TreeItem* FilebaseManager::readTree(QString driveName) const
     return parent;
 }
 
+QStringList FilebaseManager::readLines(QString driveName) const
+{
+    QFile file(mRoot + "/" + driveName);
+    qDebug() << "H"
+                "ERE " << mRoot + "/" + driveName;
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "failed to open file\n";
+    }
+
+    QTextStream out(&file);
+
+    QStringList lines;
+    while (!out.atEnd()) {
+        QString line = out.readLine();
+        lines.append(line);
+    }
+    return lines;
+}
+
 void FilebaseManager::removeFile(QString fileName) const {
     QDir dir(mRoot);
     if (dir.exists(fileName)) {
@@ -188,6 +208,20 @@ void FilebaseManager::removeFile(QString fileName) const {
     } else {
         qDebug() << "no such file\n";
     }
+}
+
+QString FilebaseManager::readAll(QString driveName) const
+{
+    QString path = mRoot + "/" + driveName + ".inf";
+    qDebug() << path;
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "didnt open\n";
+
+    }
+    QString result = file.readAll();
+    file.close();
+    return result;
 }
 
 // не проверял
