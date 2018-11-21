@@ -19,25 +19,25 @@
      <rect>
       <x>20</x>
       <y>20</y>
-      <width>75</width>
+      <width>251</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>Show Entry</string>
     </property>
    </widget>
    <widget class="QPushButton" name="deleteEntry">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>294</x>
       <y>100</y>
-      <width>75</width>
+      <width>91</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>delete Entry</string>
     </property>
    </widget>
    <widget class="QListView" name="treeList">
@@ -53,27 +53,27 @@
    <widget class="QPushButton" name="addEntry">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>294</x>
       <y>50</y>
-      <width>75</width>
+      <width>91</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>Add Entry</string>
     </property>
    </widget>
    <widget class="QPushButton" name="lookAtDrive">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>294</x>
       <y>150</y>
-      <width>75</width>
+      <width>91</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>Custom viewer</string>
     </property>
    </widget>
   </widget>

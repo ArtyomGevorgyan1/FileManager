@@ -23,7 +23,6 @@ public slots:
     void showEntry();
     void deleteEntry();
     void showDrive();
-
     void customViewer();
 
 private:

@@ -2,15 +2,22 @@
 #include "ui_mainwindow.h"
 #include "treeitem.h"
 #include "treemodel.h"
+#include "filesystemdialog.h"
 #include <QFileDialog>
 #include <QDir>
 #include <QIODevice>
 #include <QDirIterator>
 #include <QString>
+#include <QStringListModel>
+#include <QHash>
+#include <QListView>
+#include <QLineEdit>
+#include <QInputDialog>
 #include <QList>
 #include <QStringList>
 #include <QVector>
 #include <QVariant>
+#include <QFileSystemModel>
 #include <QModelIndex>
 #include <QDateTime>
 #include <QDate>
@@ -29,18 +36,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //addEntryToFilebase();
     //showEntry();
-
     //showDrive();
+    //customViewer();
+    addEntryToFilebase();
+    //TreeItem* p = FilebaseManager::instance().readTree("Name.inf");
+    //deleteEntry();
 
-    customViewer();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-#include <QHash>
 
 void MainWindow::addEntryToFilebase()
 {
@@ -72,6 +79,7 @@ void MainWindow::addEntryToFilebase()
             continue;
         }
 
+
         QFileInfo info(thisFilePath);
         QList <QVariant>* data = new QList <QVariant>;
 
@@ -99,8 +107,8 @@ void MainWindow::addEntryToFilebase()
             *data << hashValue;
         }
 
+
         QString parentPath = thisFilePath;
-        qDebug() << parentPath << "\n";
         //убрать до последнего слеша
         for (int i = thisFilePath.size() - 1; i >= 0; i--) {
             if (thisFilePath[i] == "/" && i == 0) {
@@ -114,11 +122,9 @@ void MainWindow::addEntryToFilebase()
         parentPath = parentPath.trimmed();
         if (parentPath[parentPath.size() - 1] == "/") {
             // папка
-            qDebug() << "triggeredn\n";
             parentPath.replace(parentPath.size() - 1, 1, " ");
         }
         parentPath = parentPath.trimmed();
-        qDebug() << parentPath;
 
 
         TreeItem* parent = map[parentPath];
@@ -133,14 +139,6 @@ void MainWindow::addEntryToFilebase()
      FilebaseManager::instance().writeTree(header);
 }
 
-
-
-#include <QStringListModel>
-#include <QListView>
-
-#include <QLineEdit>
-#include <QInputDialog>
-
 void MainWindow::showEntry()
 {
     bool ok;
@@ -150,18 +148,17 @@ void MainWindow::showEntry()
 
     QDir dir(FilebaseManager::instance().root());
     if (!ok || text.isEmpty()) {
-        qDebug() << "!ok"
-                    "\n";
         return;
     }
     if (dir.exists(text + ".inf")) {
-        qDebug() << "worked\n";
         TreeItem* tree = FilebaseManager::instance().readTree(text + ".inf");
 
+        /*
         qDebug() << tree ->data(0);
         for (int i = 0; i < tree->childCount(); i++) {
             qDebug() << tree ->child(i)->data(0);
         }
+        */
 
         TreeModel* model = new TreeModel(tree);
         ui ->treeList->setModel(model);
@@ -174,10 +171,10 @@ void MainWindow::deleteEntry()
     QString fileName = QFileDialog::getOpenFileName(this, "select",
                                                     FilebaseManager::instance().root(),
                                                     "(*.inf)");
+    FilebaseManager::instance().removeFile(fileName);
 
 }
 
-#include <QFileSystemModel>
 void MainWindow::showDrive()
 {
     QString drive = QFileDialog::getExistingDirectory(this,
@@ -190,7 +187,6 @@ void MainWindow::showDrive()
     view -> show();
 }
 
-#include "filesystemdialog.h"
 void MainWindow::customViewer()
 {
     FileSystemDialog* dialog = new FileSystemDialog(this);
