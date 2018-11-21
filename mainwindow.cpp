@@ -78,7 +78,7 @@ void MainWindow::addEntryToFilebase()
         if (thisFilePath[thisFilePath.size() - 1] == ".") {
             continue;
         }
-
+        qDebug() << thisFilePath;
 
         QFileInfo info(thisFilePath);
         QList <QVariant>* data = new QList <QVariant>;

@@ -50,68 +50,6 @@ void test(TreeItem* item, int d) {
     qDebug() << item -> data(0) << d << "\n";
 }
 
-// работает правильно! - ytn
-/*
-void FilebaseManager::writeTree(TreeItem* parent) const
-{
-    QString driveName = parent -> data(0).toString();
-    QFile file(mRoot + "/" + driveName + ".inf");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qDebug() << "failed to open file\n";
-    }
-
-    qDebug() << "ENDED TEST\n";
-
-    QTextStream in(&file);
-
-
-    QVector <QPair<int, TreeItem*>> stack;
-    QHash<TreeItem*, int> lastChildWritten;
-    stack.push_back({0, parent});
-    QHash<TreeItem*, bool> isWritten;
-    isWritten.insert (parent, true);
-
-
-    while (1) {
-
-        if (stack.isEmpty()) {
-            break;
-        }
-
-        int curIndent = stack.last().first;
-        TreeItem* curItem = stack.last().second;
-        stack.pop_back();
-
-        if (isWritten.find(curItem) !=isWritten.end()) {
-            for (int i = 0; i <curIndent; i++) {
-                in << " ";
-            }
-            in << curItem << "\n";
-
-            isWritten.insert(curItem, true);
-        }
-
-
-        int currentChildIndex = 0;
-        if (lastChildWritten.find(curItem) != lastChildWritten.end()) {
-            currentChildIndex = lastChildWritten[curItem];
-        } else {
-            lastChildWritten.insert(curItem, 0);
-        }
-
-        if (curItem -> childCount() > 0 && currentChildIndex < curItem -> childCount()) {
-            qDebug() << "pushing" << curIndent + 1 << "\n";
-            stack.push_back({curIndent + 1, curItem -> child(currentChildIndex)});
-            lastChildWritten[curItem]++;
-        } else if (parent != curItem -> parentItem()){
-            stack.push_back({curIndent - 1, curItem -> parentItem()});
-        }
-    }
-
-    file.close();
-}
-    */
-
 void FilebaseManager::writeTree(TreeItem* parent) const
 {
     QString driveName = parent -> data(0).toString();
@@ -135,17 +73,8 @@ void FilebaseManager::writeTree(TreeItem* parent) const
     QVector <TreeItem*> stack;
     QHash <TreeItem*, int> m;
     QSet <TreeItem*> vis;
-    // тест
     stack.push_back(parent);
-    int i = 0;
     while (!stack.isEmpty()) {
-        qDebug() << i++ << "\n";
-        if (i == 10 ) break;
-
-        for (int i = 0;  i < stack.size(); i++) {
-            qDebug() << stack[i] << " ";
-        }
-        qDebug()<< "\n";
         TreeItem* cur = stack.last();
         if (vis.find(cur) == vis.end()) {
 
@@ -153,14 +82,12 @@ void FilebaseManager::writeTree(TreeItem* parent) const
                 in << " ";
             }
             in << cur << "\n";
-            //qDebug() << cur -> data(0)<<"---------------------------";
-
             vis.insert(cur);
         }
 
-        if (cur->childCount() == 0 || (m.find(cur) != m.end() && m[cur] >= cur ->columnCount())) {
+        if (cur->childCount() == 0 || (m.find(cur) != m.end() && m[cur] >= cur ->childCount())) {
             stack.pop_back();
-            qDebug()<<'f';
+
         } else {
             if (m.find(cur) == m.end()) {
                 m.insert(cur, 0);
@@ -169,7 +96,6 @@ void FilebaseManager::writeTree(TreeItem* parent) const
             if (m[cur] < cur -> childCount()) {
                 stack.push_back(cur -> child(m[cur]));
                 m[cur]++;
-                qDebug()<<'a';
             }
         }
     }
