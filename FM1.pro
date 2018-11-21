@@ -29,16 +29,20 @@ SOURCES += \
         mainwindow.cpp \
     treeitem.cpp \
     treemodel.cpp \
-    filebasemanager.cpp
+    filebasemanager.cpp \
+    filesystemdialog.cpp
+
 
 HEADERS += \
         mainwindow.h \
     treeitem.h \
     treemodel.h \
-    filebasemanager.h
+    filebasemanager.h \
+    filesystemdialog.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    filesystemdialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

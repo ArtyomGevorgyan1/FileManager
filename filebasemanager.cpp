@@ -130,7 +130,7 @@ void FilebaseManager::writeTree(TreeItem* parent) const
     QList <QVariant> *data  = new QList <QVariant>;
     *data << "name " << "cost ";
     TreeItem* p = new TreeItem(*data);
-    TreeItem* pp = new TreeItem(*data, pp);
+    TreeItem* pp = new TreeItem(*data, p);
     p -> appendChild(pp);
     TreeItem* ppp = new TreeItem(*data, pp);
     pp -> appendChild(ppp);
@@ -139,7 +139,7 @@ void FilebaseManager::writeTree(TreeItem* parent) const
     QHash <TreeItem*, int> m;
     QSet <TreeItem*> vis;
     // тест
-    stack.push_back(p);
+    stack.push_back(parent);
     int i = 0;
     while (!stack.isEmpty()) {
         qDebug() << i++;

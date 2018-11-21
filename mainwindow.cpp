@@ -27,9 +27,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     FilebaseManager::instance().setRoot(QDir::currentPath());
 
-    addEntryToFilebase();
+    //addEntryToFilebase();
     //showEntry();
 
+    //showDrive();
+
+    customViewer();
 }
 
 MainWindow::~MainWindow()
@@ -181,7 +184,15 @@ void MainWindow::showDrive()
                                                       tr("Select Directory"),
                                                       QDir::rootPath());
     QFileSystemModel* model = new QFileSystemModel(this);
+    model -> setRootPath(drive);
     QTreeView* view = new QTreeView;
     view -> setModel(model);
     view -> show();
+}
+
+#include "filesystemdialog.h"
+void MainWindow::customViewer()
+{
+    FileSystemDialog* dialog = new FileSystemDialog(this);
+    dialog->show();
 }

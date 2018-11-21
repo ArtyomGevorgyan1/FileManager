@@ -24,6 +24,8 @@ public slots:
     void deleteEntry();
     void showDrive();
 
+    void customViewer();
+
 private:
     Ui::MainWindow *ui;
 
