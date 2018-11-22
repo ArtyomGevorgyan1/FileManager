@@ -102,7 +102,7 @@ void FilebaseManager::writeTree(TreeItem* parent) const
     file.close();
 }
 
-// дерево неправильное, но в принципе для теста сойдет
+// дерево неправильное, а так норм
 TreeItem* FilebaseManager::readTree(QString driveName) const
 {
     QFile file(mRoot + "/" + driveName);
@@ -132,7 +132,8 @@ TreeItem* FilebaseManager::readTree(QString driveName) const
     QList<TreeItem*> parents;
     QList<int> indentations;
     parents << parent;
-    indentations << 0;
+    // не 0
+    indentations << 1;
 
     // начинаем с единицы, потому что перввая (0-я) строка уже записана
     int number = 1;
@@ -150,11 +151,10 @@ TreeItem* FilebaseManager::readTree(QString driveName) const
 
         if (!lineData.isEmpty()) {
             // Read the column data from the rest of the line.
-            QStringList columnStrings = lineData.split("\t", QString::SkipEmptyParts);
+            QStringList columnStrings = lineData.split(" ", QString::SkipEmptyParts);
             QList<QVariant> columnData;
             for (int column = 0; column < columnStrings.count(); ++column)
                 columnData << columnStrings[column];
-
             if (position > indentations.last()) {
                 // The last child of the current parent is now the new parent
                 // unless the current parent has no children.
@@ -177,7 +177,7 @@ TreeItem* FilebaseManager::readTree(QString driveName) const
         ++number;
     }
     file.close();
-    test(parent, 0);
+    //test(parent, 0);
 
     return parent;
 }

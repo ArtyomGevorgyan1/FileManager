@@ -167,8 +167,9 @@ void MainWindow::showEntry()
     if (!ok || text.isEmpty()) {
         return;
     }
+    TreeItem* r = FilebaseManager::instance().readTree("Name.inf");
 
-    TreeModel* model = new TreeModel(FilebaseManager::instance().readTree("Name.inf"));
+    TreeModel* model = new TreeModel(r);
     ui -> treeView -> setModel(model);
     ui -> treeView -> show();
 }
