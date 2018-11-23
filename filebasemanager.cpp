@@ -140,13 +140,32 @@ TreeItem* FilebaseManager::readTree(QString driveName) const
 
         if (!lineData.isEmpty()) {
             // Read the column data from the rest of the line.
-            QStringList columnStrings = lineData.split(" ", QString::SkipEmptyParts);
+            QStringList columnStrings1 = lineData.split(" ", QString::SkipEmptyParts);
+            QStringList columnStrings;
+            foreach(QString item, columnStrings1) {
+                QString tmp;
+                for (int j = 0; j < item.size(); j++) {
+                    if (item.at(j) == "*") {
+                        tmp += ".";
+                        continue;
+                    }
+                    if (item.at(j) == "_") {
+                        tmp += " ";
+                        continue;
+                    }
+                    else {
+                        tmp += item.at(j);
+                    }
+
+                }
+                columnStrings << tmp;
+                qDebug() << tmp;
+            }
+
             QList<QVariant> columnData;
             for (int column = 0; column < columnStrings.count(); ++column)
                 columnData << columnStrings[column];
             if (position > indentations.last()) {
-                // The last child of the current parent is now the new parent
-                // unless the current parent has no children.
                 if (parents.last()->childCount() > 0) {
                     parents << parents.last()->child(parents.last()->childCount()-1);
                     indentations << position;
@@ -158,7 +177,6 @@ TreeItem* FilebaseManager::readTree(QString driveName) const
                 }
             }
 
-            // Append a new item to the current parent's list of children.
             parents.last()->appendChild(new TreeItem(columnData, parents.last()));
 
 
@@ -174,10 +192,9 @@ TreeItem* FilebaseManager::readTree(QString driveName) const
 QStringList FilebaseManager::readLines(QString driveName) const
 {
     QFile file(mRoot + "/" + driveName);
-    qDebug() << "H"
-                "ERE " << mRoot + "/" + driveName;
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "failed to open file\n";
+        return QStringList();
     }
 
     QTextStream out(&file);
@@ -196,6 +213,7 @@ void FilebaseManager::removeFile(QString fileName) const {
         dir.remove(fileName);
     } else {
         qDebug() << "no such file\n";
+        return;
     }
 }
 
@@ -205,15 +223,14 @@ QString FilebaseManager::readAll(QString driveName) const
     qDebug() << path;
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug() << "didnt open\n";
-
+        qDebug() << "cannot open the file\n";
+        return QString();
     }
     QString result = file.readAll();
     file.close();
     return result;
 }
 
-// не проверял
 int FilebaseManager::knownFieCopiesCounter(QByteArray hash)
 {
     QDir dir(mRoot);
@@ -254,8 +271,29 @@ int FilebaseManager::knownFieCopiesCounter(QByteArray hash)
     return counter;
 }
 
-
 void FilebaseManager::mergeDirectories(QString resultName, QStringList toMerge)
 {
-    // записать в новый файл содержимое файлов из списка
+
+
+    QVector <TreeItem*> roots;
+
+    foreach (QString item, toMerge) {
+        TreeItem* root = readTree(item);
+        roots.push_back(root);
+    }
+
+    QList <QVariant> data;
+    data << "Name" << "CreatedTime" << "ModifiedTime" << "Extension" << "IsDir" << "HashValue";
+    TreeItem* parent = new TreeItem(data);
+
+    foreach(TreeItem* item, roots) {
+        for (int i = 0; i < item -> childCount(); i++ ) {
+            parent -> appendChild(item -> child(i));
+            item -> child(i) -> setParent(parent);
+        }
+        delete item;
+    }
+
+    writeTree(parent, resultName);
 }
+

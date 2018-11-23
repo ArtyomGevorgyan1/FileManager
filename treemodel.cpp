@@ -1,5 +1,4 @@
 #include "treemodel.h"
-
 #include "treeitem.h"
 #include "treemodel.h"
 
@@ -52,7 +51,7 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
-        return 0;
+        return nullptr;
 
     return QAbstractItemModel::flags(index);
 }
@@ -134,15 +133,12 @@ void TreeModel::setupModelData(const QStringList &lines, TreeItem *parent)
         QString lineData = lines[number].mid(position).trimmed();
 
         if (!lineData.isEmpty()) {
-            // Read the column data from the rest of the line.
             QStringList columnStrings = lineData.split("\t", QString::SkipEmptyParts);
             QList<QVariant> columnData;
             for (int column = 0; column < columnStrings.count(); ++column)
                 columnData << columnStrings[column];
 
             if (position > indentations.last()) {
-                // The last child of the current parent is now the new parent
-                // unless the current parent has no children.
 
                 if (parents.last()->childCount() > 0) {
                     parents << parents.last()->child(parents.last()->childCount()-1);
@@ -155,7 +151,6 @@ void TreeModel::setupModelData(const QStringList &lines, TreeItem *parent)
                 }
             }
 
-            // Append a new item to the current parent's list of children.
             parents.last()->appendChild(new TreeItem(columnData, parents.last()));
         }
 

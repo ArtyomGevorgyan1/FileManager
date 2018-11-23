@@ -18,6 +18,11 @@ void TreeItem::appendChild(TreeItem *item)
     m_childItems.append(item);
 }
 
+void TreeItem::setParent(TreeItem* parent)
+{
+    m_parentItem = parent;
+}
+
 TreeItem *TreeItem::child(int row)
 {
     return m_childItems.value(row);

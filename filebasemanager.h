@@ -15,22 +15,22 @@ public:
     QString root() const;
 
 
-    // ok
+
    void writeTree(TreeItem* parent, QString driveName) const;
-   //ok
+
    TreeItem* readTree(QString driveName) const;
 
-   // ok
+
    void removeFile(QString fileName) const;
-   // ok
+
    QStringList readLines(QString driveName) const;
-   // ok
+
    QString readAll(QString driveName) const;
 
-   //additional - потом
+
    void mergeDirectories(QString resultName, QStringList toMerge);
    int knownFieCopiesCounter(QByteArray hash);
-   //QList <QVariant> searchFor() const;
+   //QList <QString> searchFor(QString searchTarget, QList <QString> params) const;
 
 protected:
     FilebaseManager();

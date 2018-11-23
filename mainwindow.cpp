@@ -224,7 +224,6 @@ void MainWindow::showDrive()
     view -> show();
 }
 
-// todo
 void MainWindow::customViewer()
 {
     FileSystemDialog* dialog = new FileSystemDialog(this);
