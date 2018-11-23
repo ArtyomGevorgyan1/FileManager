@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
     FilebaseManager::instance().setRoot(QDir::currentPath());
 
     //addEntryToFilebase();
-    showEntry();
+    //showEntry();
     //showDrive();
     //customViewer();
    // addEntryToFilebase();
@@ -58,6 +58,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui -> treeView -> show();
     */
 
+    connect(ui ->addEntry, &QPushButton::clicked,
+            this, &MainWindow::addEntryToFilebase);
+    connect(ui ->deleteEntry, &QPushButton::clicked,
+            this, &MainWindow::deleteEntry);
+    connect(ui ->showEntry, &QPushButton::clicked,
+            this, &MainWindow::showEntry);
+    connect(ui ->lookAtDrive, &QPushButton::clicked,
+            this, &MainWindow::showDrive);
+
+
 }
 
 MainWindow::~MainWindow()
@@ -65,6 +75,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+// прописать _ вместо пробелов в названии файлов
 void MainWindow::addEntryToFilebase()
 {
     //set the path from which to pull data
@@ -113,12 +124,43 @@ void MainWindow::addEntryToFilebase()
             file.close();
         }
 
-        *data << info.fileName() << info.birthTime().time().toString("hh:mm:ss")
+        QString fileName = info.fileName();
+        /* ТЕСТ!!!! */
+        if (fileName.contains(" ")) {
+            for (int i = 0; i < fileName.size(); i++) {
+                if (fileName.at(i) == " ") {
+                    fileName.replace(i, 1, "_");
+                }
+            }
+        }
+
+        if (fileName.contains(".")) {
+            for (int i = 0; i < fileName.size(); i++) {
+                if (fileName.at(i) == ".") {
+                    fileName.replace(i, 1, "*");
+                }
+            }
+        }
+
+        QString suffix;
+        if (info.isDir()) {
+            suffix = "noValue";
+        }
+        if (info.isFile()) {
+            suffix = info.suffix();
+        }
+
+        // КОНЕЦ ТЕСТА
+
+
+
+
+        *data << fileName << info.birthTime().time().toString("hh:mm:ss")
               << info.lastModified().time().toString("hh:mm:ss")
-              << info.suffix()
+              << suffix //info.suffix()
               << info.isDir();
         if (info.isDir()) {
-            *data << "null";
+            *data << "noValue";
         } else if (info.isFile()) {
             *data << hashValue;
         }

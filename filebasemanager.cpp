@@ -102,7 +102,7 @@ void FilebaseManager::writeTree(TreeItem* parent) const
     file.close();
 }
 
-// дерево неправильное, а так норм
+//не работает для случая, когда имя папки или файла содержит пробелы
 TreeItem* FilebaseManager::readTree(QString driveName) const
 {
     QFile file(mRoot + "/" + driveName);
@@ -120,14 +120,16 @@ TreeItem* FilebaseManager::readTree(QString driveName) const
         lines.append(line);
     }
     for (int i = 0; i < lines.count(); i++) {
-        qDebug() << lines[i] << "\n";
+        //qDebug() << lines[i] << "\n";
     }
-
 
     // заполним сейча header, потом пропустим певую итерацию цикла
     QList <QVariant> list;
     list << "Name" << "CreatedTime" << "ModifiedTime" << "Extension" << "IsDir" << "HashValue";
     TreeItem* parent = new TreeItem(list, nullptr);
+
+    //TreeItem* parent;
+    //int indentGlobal = 1;
 
     QList<TreeItem*> parents;
     QList<int> indentations;
@@ -136,7 +138,7 @@ TreeItem* FilebaseManager::readTree(QString driveName) const
     indentations << 1;
 
     // начинаем с единицы, потому что перввая (0-я) строка уже записана
-    int number = 1;
+    int number = 0;
 
     while (number < lines.count()) {
 
@@ -146,6 +148,8 @@ TreeItem* FilebaseManager::readTree(QString driveName) const
                 break;
             position++;
         }
+
+        qDebug() << "Current idenntation: " << position <<"\n";
 
         QString lineData = lines[number].mid(position).trimmed();
 
@@ -162,6 +166,17 @@ TreeItem* FilebaseManager::readTree(QString driveName) const
                 if (parents.last()->childCount() > 0) {
                     parents << parents.last()->child(parents.last()->childCount()-1);
                     indentations << position;
+
+                    for (int i = 0; i < parents.size(); i++) {
+                        qDebug() << parents[i] -> data(0) << " " << parents[i] -> data(1) << " ";
+                    }
+                    for (int i = 0; i < parents.size(); i++) {
+                        qDebug() << indentations[i];
+                    }
+                    qDebug() << "-----------\n";
+                } else {
+                    qDebug()<< "HERE\n";
+
                 }
             } else {
                 while (position < indentations.last() && parents.count() > 0) {
@@ -172,14 +187,21 @@ TreeItem* FilebaseManager::readTree(QString driveName) const
 
             // Append a new item to the current parent's list of children.
             parents.last()->appendChild(new TreeItem(columnData, parents.last()));
+
+            //test
+            //indentations << position;
         }
 
         ++number;
     }
+
+
+
+
     file.close();
     //test(parent, 0);
+    return parent -> child(0);
 
-    return parent;
 }
 
 QStringList FilebaseManager::readLines(QString driveName) const
