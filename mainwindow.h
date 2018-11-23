@@ -19,10 +19,15 @@ public:
     ~MainWindow();
 
 public slots:
+    //ok
     void addEntryToFilebase();
+    // ok
     void showEntry();
+    // ok
     void deleteEntry();
+    // ok
     void showDrive();
+
     void customViewer();
 
 private:

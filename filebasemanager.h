@@ -15,10 +15,16 @@ public:
     QString root() const;
 
 
-   void writeTree(TreeItem* parent) const;
+    // ok
+   void writeTree(TreeItem* parent, QString driveName) const;
+   //ok
    TreeItem* readTree(QString driveName) const;
+
+   // ok
    void removeFile(QString fileName) const;
+   // ok
    QStringList readLines(QString driveName) const;
+   // ok
    QString readAll(QString driveName) const;
 
    //additional - потом

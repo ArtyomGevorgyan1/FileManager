@@ -35,29 +35,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     FilebaseManager::instance().setRoot(QDir::currentPath());
 
-    //addEntryToFilebase();
-    //showEntry();
-    //showDrive();
-    //customViewer();
-   // addEntryToFilebase();
-    //showEntry();
-    //deleteEntry();
-
-    /*
-    QList <QVariant> data;
-    data << "first" << "second";
-    TreeItem* p = new TreeItem(data);
-    TreeItem* pp = new TreeItem(data,
-                                p);
-    TreeItem* ppp = new TreeItem(data, pp);
-    p -> appendChild(pp);
-    pp -> appendChild(ppp);
-
-    TreeModel* model = new TreeModel(p, this);
-    ui -> treeView ->setModel(model);
-    ui -> treeView -> show();
-    */
-
     connect(ui ->addEntry, &QPushButton::clicked,
             this, &MainWindow::addEntryToFilebase);
     connect(ui ->deleteEntry, &QPushButton::clicked,
@@ -65,9 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui ->showEntry, &QPushButton::clicked,
             this, &MainWindow::showEntry);
     connect(ui ->lookAtDrive, &QPushButton::clicked,
-            this, &MainWindow::showDrive);
-
-
+            this, &MainWindow::customViewer);
 }
 
 MainWindow::~MainWindow()
@@ -75,7 +50,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-// прописать _ вместо пробелов в названии файлов
+// прописать _ вместо пробелов в названии файлов, вместо точек звездочки
 void MainWindow::addEntryToFilebase()
 {
     //set the path from which to pull data
@@ -87,6 +62,18 @@ void MainWindow::addEntryToFilebase()
 
 
     qDebug() << path << "\n";
+
+    QString driveName;
+    int lastSlashPos = 0;
+    for(int i = 0; i < path.size(); i++) {
+        if (path.at(i) == "/") {
+            lastSlashPos = i;
+        }
+    }
+
+    for (int i = lastSlashPos + 1; i < path.size(); i++) {
+        driveName.append(path.at(i));
+    }
 
     // set the header treeitem to hold the informaton needed to be privided to view
     QList <QVariant>* headerData = new QList <QVariant>;
@@ -125,7 +112,7 @@ void MainWindow::addEntryToFilebase()
         }
 
         QString fileName = info.fileName();
-        /* ТЕСТ!!!! */
+
         if (fileName.contains(" ")) {
             for (int i = 0; i < fileName.size(); i++) {
                 if (fileName.at(i) == " ") {
@@ -149,11 +136,6 @@ void MainWindow::addEntryToFilebase()
         if (info.isFile()) {
             suffix = info.suffix();
         }
-
-        // КОНЕЦ ТЕСТА
-
-
-
 
         *data << fileName << info.birthTime().time().toString("hh:mm:ss")
               << info.lastModified().time().toString("hh:mm:ss")
@@ -194,7 +176,7 @@ void MainWindow::addEntryToFilebase()
     // получили дерево, которое представляет диск
 
     // запишем его в файл
-     FilebaseManager::instance().writeTree(header);
+     FilebaseManager::instance().writeTree(header, driveName);
 }
 
 
@@ -209,7 +191,7 @@ void MainWindow::showEntry()
     if (!ok || text.isEmpty()) {
         return;
     }
-    TreeItem* r = FilebaseManager::instance().readTree("Name.inf");
+    TreeItem* r = FilebaseManager::instance().readTree(text + ".inf");
 
     TreeModel* model = new TreeModel(r);
     ui -> treeView -> setModel(model);
@@ -219,9 +201,12 @@ void MainWindow::showEntry()
 
 void MainWindow::deleteEntry()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "select",
-                                                    FilebaseManager::instance().root(),
-                                                    "(*.inf)");
+    bool ok;
+    QString text =QInputDialog::getText(this, tr("QInputDialog::getText()"),
+                                        tr("User name:"), QLineEdit::Normal,
+                                        FilebaseManager::instance().root(), &ok);
+    QString fileName = FilebaseManager::instance().root() + "/" + text + ".inf";
+    qDebug() << fileName;
     FilebaseManager::instance().removeFile(fileName);
 }
 
