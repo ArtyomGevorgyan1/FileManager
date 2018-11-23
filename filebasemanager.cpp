@@ -214,12 +214,32 @@ QString FilebaseManager::readAll(QString driveName) const
 }
 
 // не проверял
-int FilebaseManager::knownFieCopiesCounter(QCryptographicHash hash)
+int FilebaseManager::knownFieCopiesCounter(QByteArray hash)
 {
     QDir dir(mRoot);
-    QFileInfoList list = dir.entryInfoList();
+    QFileInfoList buffer = dir.entryInfoList();
+    buffer.pop_front();
+    buffer.pop_front();
+
+    QFileInfoList list;
+
+    foreach(QFileInfo info, buffer) {
+        if (info.isDir()) {
+            continue;
+        }
+        QString f = info.suffix();
+        if (f == "inf") {
+            list << info;
+
+        }
+    }
+
+    foreach(QFileInfo info, list) {
+        qDebug() << info.fileName();
+    }
+
     int counter = 0;
-    QString searchFor = hash.result().toHex();
+    QString searchFor = hash.toHex();
     foreach(QFileInfo info, list) {
         QString curFileName = info.fileName();
         QFile file(curFileName);
@@ -230,6 +250,7 @@ int FilebaseManager::knownFieCopiesCounter(QCryptographicHash hash)
         QString text = stream.readAll();
         counter += text.count(searchFor);
     }
+    qDebug() << counter;
     return counter;
 }
 

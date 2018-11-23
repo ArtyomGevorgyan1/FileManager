@@ -43,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent) :
             this, &MainWindow::showEntry);
     connect(ui ->lookAtDrive, &QPushButton::clicked,
             this, &MainWindow::customViewer);
+    QByteArray h = QCryptographicHash::hash(" " ,QCryptographicHash::Md5);
+    FilebaseManager::instance().knownFieCopiesCounter(h);
 }
 
 MainWindow::~MainWindow()

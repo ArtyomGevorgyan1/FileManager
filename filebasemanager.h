@@ -29,7 +29,7 @@ public:
 
    //additional - потом
    void mergeDirectories(QString resultName, QStringList toMerge);
-   int knownFieCopiesCounter(QCryptographicHash hash);
+   int knownFieCopiesCounter(QByteArray hash);
    //QList <QVariant> searchFor() const;
 
 protected:
